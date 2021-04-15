@@ -15,42 +15,42 @@ class Account {
     }
   }
   async Register(req, res) {
-   // try {
-      // let { firstname, lastname, email, phone, password } = req.body;
-      //   let user = await UserSchema.findOne({ email });
-      //   const errors = validationResult(req);
-      //   if (!errors.isEmpty()) {
-      //     return res.status(401).json({ errors: errors.array() });
-      //   }
-      //   if (user) {
-      //     return res
-      //       .status(401)
-      //       .json({ msg: "There is already with this email" });
-      //   }
-      //   const salt = await bcryptjs.genSalt(10);
-      //   password = await bcryptjs.hash(password, salt);
-      //   user = new UserSchema({
-      //     firstname,
-      //     lastname,
-      //     email,
-      //     phone,
-      //     password,
-      //   });
-      //   await user.save();
-      //   const payload = {
-      //     user: {
-      //       id: user.id,
-      //     },
-      //   };
-      //   jwt.sign(payload, config.get("jwtSecret"), (err, token) => {
-      //     if (err) throw err;
-      //     res.json({ token });
-      //   });
-      // } catch (error) {
-      //   // console.log(error.message);
-      //   return res.status(500).json({ msg: "Server Error..." });
-        console.log(req.body);
-   // }
+   try {
+      let { firstname, lastname, email, phone, password } = req.body;
+        let user = await UserSchema.findOne({ email });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(401).json({ errors: errors.array() });
+        }
+        if (user) {
+          return res
+            .status(401)
+            .json({ msg: "There is already with this email" });
+        }
+        const salt = await bcryptjs.genSalt(10);
+        password = await bcryptjs.hash(password, salt);
+        user = new UserSchema({
+          firstname,
+          lastname,
+          email,
+          phone,
+          password,
+        });
+        await user.save();
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+        jwt.sign(payload, config.get("jwtSecret"), (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        });
+      } catch (error) {
+        // console.log(error.message);
+        return res.status(500).json({ msg: "Server Error..." });
+       
+   }
   }
   // Login
   async Login(req, res) {
