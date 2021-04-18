@@ -25,6 +25,7 @@ function route(app) {
 
   // upload.single('avatar') avatar la key cua file
   app.post("/upload/demo", upload.single("avatar"), (req, res) => {
+    console.log(req.file.filename)
     return res.json("OK");
   });
 }
