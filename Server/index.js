@@ -17,8 +17,6 @@ app.use(express.json({extended: false}));
 app.get("/", (req, res) => {
     res.send("Hello World!");
   });
-
-
   router(app);
 const PORT = process.env.PORT || 6001;
 
