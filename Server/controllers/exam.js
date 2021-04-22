@@ -19,7 +19,7 @@ class Exam {
     var spawn = require("child_process").spawn;
     var a=[]
     // 
-    var tenfile='de1.docx'
+    var tenfile='de3.docx'
     var process = spawn('python',["Readword.py",tenfile] );
   
     // Takes stdout data from script which executed
