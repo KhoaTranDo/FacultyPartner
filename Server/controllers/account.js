@@ -123,8 +123,8 @@ class Account {
     });
     var code = gen();
     keyOTP.push(code);
-    const from = "HoroProject";
-    var text = " HoroProject Send OTP " + code + "Thank You ";
+    const from = "";
+    var text = "  Send OTP " + code + "Thank You ";
     //Gửi mã OTP
     console.log(keyOTP);
     // nexmo.message.sendSms(from, Phone, text,(err,result)=>{
@@ -153,7 +153,7 @@ class Account {
       } else {
         await User.findByIdAndUpdate(
           { _id: req.user.id },
-          { role: "CHUNHATRO", number_phone: number_phone },
+          {  number_phone: number_phone },
           (err, result) => {
             if (err) console.log(err);
             res.json({

@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const UserSchema = require("../models/account");
 const config = require("config");
 const spawn = require("child_process").spawn;
+const qr = require("qrcode");
 
 class Exam {
   index(req, res) {
@@ -16,27 +17,55 @@ class Exam {
     res.json({ ad: "import" });
   }
   readExam(req, res) {
+    // Thư viện spawn để chạy python
     var spawn = require("child_process").spawn;
-    var a=[]
-    // 
-    var tenfile='de3.docx'
-    var process = spawn('python',["Readword.py",tenfile] );
-  
-    // Takes stdout data from script which executed
-    // with arguments and send this data to res object
-    process.stdout.on('data', function(data) {
-        // console.log(data.toString());
-        a=JSON.parse(data.toString())
-        res.send(a)
-    })
-    
-    process.stderr.on('data',
-    function (data) {
-      console.log('err data: ' + data);
-    }
-);
-    
+    // Get questions data from python
+    let getRawanswer = "";
+    // Exam object
+    var exam = {};
+    // Lấy ảnh đã mã hoá
+    const url = req.file.filename;
+    // Kiểm tra qr rỗng không
+    if (url.length === 0) res.send("Empty Data!");
+    // Xuất qr code
+    qr.toDataURL(url, (err, src) => {
+      if (err) res.send("Error occured");
+      exam["image"] = src;
+    });
+    // Lấy file name
+    var tenfile = "de3.docx"; //vd de3.docx
+    var process = spawn("python", ["Readword.py", tenfile]);
 
+    //Tạo slug phần biệt
+    exam["slug"] = req.file.filename;
+
+    // Chạy python
+    process.stdout
+      .on("data", function (data) {
+        // console.log(data.toString());
+        getRawanswer += data.toString();
+      })
+      .on("end", () => {
+        exam["rawquestion"] = JSON.parse(getRawanswer);
+        var arrmixexam=[]
+        arrmixexam=mixquestion(exam, 3)
+        // In ra ket qua
+        exam["exammixed"] = arrmixexam;
+        res.send(exam);
+      });
+    process.stderr.on("data", function (data) {
+      console.log("err data: " + data);
+    });
+  }
+
+  getqr(req, res) {
+    const url = req.body.url;
+    if (url.length === 0) res.send("Empty Data!");
+    qr.toDataURL(url, (err, src) => {
+      if (err) res.send("Error occured");
+      console.log(src);
+      res.send(JSON.stringify(src));
+    });
   }
   importSlug(req, res) {
     res.json({ addd: "importSlug" });
@@ -48,5 +77,27 @@ class Exam {
     res.json({ addd: "infor" });
   }
 }
+function mixquestion(exam, sode) {
+  // console.log(exam["rawquestion"]);
+  var data = {};
+  data[sode];
+  for (var i = 0; i < sode; i++) {
+    var data1={}
+    var arr = shuffle(exam["rawquestion"]);
+    data1["idexam"] = Math.floor((Math.random() * 100) + 1)
+    data1["questions"] = arr;
+    data[i]=data1
+  }
 
+  return data;
+}
+function shuffle(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
 module.exports = new Exam();
