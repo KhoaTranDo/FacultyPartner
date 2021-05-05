@@ -1,5 +1,5 @@
-const accountRouter = require('./account');
-const ExamRouter = require("./exam");
+const accountRouter = require('./account')
+const examRouter = require('./exam')
 
 function route(app){
     // Chứa các router chính
@@ -8,7 +8,7 @@ function route(app){
         res.send("Hello World!");
       });
    app.use('/account',accountRouter)
-   app.use('/exam',ExamRouter)
+   app.use('/exam',examRouter)
 }
 
 module.exports = route;
