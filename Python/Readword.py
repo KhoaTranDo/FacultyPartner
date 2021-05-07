@@ -21,7 +21,7 @@ sothutu=[]
 def TimCauHoi(a):
     cauhoi = a.text
     # Nhận câu hỏi và đáp án theo ký tự
-    words=['PART 1','Câu2','Câu3','1)','2)','3)']
+    words=['PART 1','Câu3','1)','2)','3)','###']
     words1 = ['A', 'B', 'C', 'D', 'E', 'F']
     words11 = []
     # Xử lý ký tự đầu đáp án
@@ -49,32 +49,37 @@ def TimCauHoi(a):
             if worda in cauhoi:
                 for run in a.runs:
                     if run.bold:
-                        cauhoi = cauhoi.replace(worda, '***')
+                        cauhoi = cauhoi.replace(worda, '$$')
                     else:
                         cauhoi = cauhoi.replace(worda, '**')
                 a.text = cauhoi
     return (a.text)
 
 for a in all_text:
-    if "###" in TimCauHoi(a):
+      if "###" in TimCauHoi(a):
+
         if answerthamthoi !=[]:
             luutamthoi["Answer"] = answerthamthoi
             luutamthoi["Truenswer"] = trueanswer
+            luutamthoi["image"] = luuanh
             exams.append(luutamthoi)
+            luuanh=[]
             luutamthoi={}
             answerthamthoi=[]
             trueanswer=[]
             index = index + 1
-        demo.insert(index,TimCauHoi(a))
-        luutamthoi['Question'] = a.text
-
+        cauhoi = TimCauHoi(a).replace('###', '')
+        luutamthoi['Question'] = cauhoi
     if "**" in TimCauHoi(a):
-        answerthamthoi.append(TimCauHoi(a))
-    if "***" in TimCauHoi(a):
-        trueanswer.append(TimCauHoi(a))
+        dapan=TimCauHoi(a).replace('**','')
+        answerthamthoi.append(dapan)
+    if "$$" in TimCauHoi(a):
+        dapandung = TimCauHoi(a).replace('$$', '')
+        trueanswer.append(dapandung)
     if "#End" in TimCauHoi(a):
         luutamthoi["Answer"] = answerthamthoi
         luutamthoi["Trueanswer"] = trueanswer
+        luutamthoi["image"] = luuanh
         exams.append(luutamthoi)
         break
     # print(a.text)

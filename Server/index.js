@@ -2,6 +2,7 @@ const express = require('express');
 const cors= require('cors');
 const app= express();
 const connectToDatabase = require('./config/connectToDatabase');
+require('dotenv').config();
 // const connectToDatabase = require('./config/connectToDatabase'); //connect database mongoose
 
 //Ket noi database
@@ -18,6 +19,6 @@ app.get("/", (req, res) => {
     res.send("Hello World!");
   });
   router(app);
-const PORT = process.env.PORT || 6001;
+const PORT = process.env.PORT ||3000;
 
 app.listen(PORT,()=> console.log(`Server running on port :${PORT}`))

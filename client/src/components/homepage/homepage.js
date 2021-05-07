@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import { Link } from "react-router-dom";
 class homepage extends Component {
   constructor(props) {
     super(props);
@@ -16,8 +16,7 @@ class homepage extends Component {
             <a>
               <img
                 src="./assets/img/logo1.png"
-                width={150}
-                height={30}
+                width={150}           
                 className="d-inline-block align-top"
                 alt
               />
@@ -37,14 +36,14 @@ class homepage extends Component {
           </section>
           {/* end_Phan_1 */}
           {/* ======= FUNCTIONS Section ======= */}
-          
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-12 d-flex align-items-stretch">
-                  <div className="icon-boxes d-flex flex-column justify-content-center">
-                    <div className="row">
-                      <div className="col-xl-1 d-flex align-items-stretch"></div>
-                      <div className="col-xl-4 d-flex align-items-stretch">
+          <section id="funct" class="funct">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-12 inline-block ">
+                <div className="icon-boxes justify-content-center">
+                  <div className="row">
+                      <div className="col-xl-4 ">
+                    <Link to="/create" style={{ textDecoration: 'none'}}>
                         <div className="icon-box mt-4 mt-xl-0 icon">
                           <i className="far fa-file-alt" />
                           <h4>Tạo đề</h4>
@@ -53,19 +52,11 @@ class homepage extends Component {
                             typesetting industry.{" "}
                           </p>
                         </div>
+                    </Link>
                       </div>
-                      <div className="col-xl-2 d-flex align-items-stretch"></div>
-                      {/* <div class="col-xl-3 d-flex align-items-stretch">
-                          <div class="icon-box mt-4 mt-xl-0">
-                              <i class="fas fa-book"></i>
-                              <h4>Quản lí đề</h4>
-                              <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                  Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                                  unknown printer took a galley of type and scrambled it to make a type specimen
-                                  book.</p>
-                          </div>
-                      </div> */}
-                      <div className="col-xl-4 d-flex align-items-stretch">
+                    <div className="col-xl-2  "></div>
+                      <div className="col-xl-4  ">
+                    <Link to="/create" style={{ textDecoration: 'none'}}>
                         <div className="icon-box mt-4 mt-xl-0 icon">
                           <i className="fas fa-check-circle" />
                           <h4>Chấm điểm</h4>
@@ -74,14 +65,15 @@ class homepage extends Component {
                             typesetting industry.
                           </p>
                         </div>
+                    </Link>
                       </div>
-                    </div>
                   </div>
-                  {/* End .content*/}
                 </div>
+                {/* End .content*/}
               </div>
             </div>
-    
+          </div>
+</section>
           {/* End FUNCTIONS Section */}
           {/* Introductions */}
           <div className="container phan1 border-top">
@@ -131,20 +123,7 @@ class homepage extends Component {
               </div>
             </div>
           </div>
-          {/* <div class="container mt-5">
-  <div class="row">
-      <div class="col-sm d-flex justify-content-center"><iframe width="560" height="315" src="https://www.youtube.com/embed/BdPk9ipvczM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-    
-      <div class="col-sm">
-          <div class="section-title">
-              <h2>Chấm điểm</h2>
-          </div>
-          <p class="`">
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-          </p>
-      </div>
-  </div>
-    </div>*/}
+
           <div className="container phan1 mt-2" style={{ height: 50 }}>
             <div className="row">
               <div className="col-sm-4" />

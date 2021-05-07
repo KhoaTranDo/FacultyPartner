@@ -5,6 +5,7 @@ const UserSchema = require("../models/account");
 const config = require("config");
 const spawn = require("child_process").spawn;
 const qr = require("qrcode");
+const lodash =require('lodash')
 
 class Exam {
   index(req, res) {
@@ -24,20 +25,20 @@ class Exam {
     // Exam object
     var exam = {};
     // Lấy ảnh đã mã hoá
-    const url = req.file.filename;
+    const url = 'req.file.filename';
     // Kiểm tra qr rỗng không
     if (url.length === 0) res.send("Empty Data!");
     // Xuất qr code
-    qr.toDataURL(url, (err, src) => {
-      if (err) res.send("Error occured");
-      exam["image"] = src;
+   qr.toDataURL(url, (err, src) => {
+     if (err) res.send("Error occured");
+     exam["image"] = src;
     });
     // Lấy file name
     var tenfile = "de3.docx"; //vd de3.docx
     var process = spawn("python", ["Readword.py", tenfile]);
 
     //Tạo slug phần biệt
-    exam["slug"] = req.file.filename;
+     exam["slug"] = 'req.file.filename';
 
     // Chạy python
     process.stdout
@@ -83,21 +84,27 @@ function mixquestion(exam, sode) {
   data[sode];
   for (var i = 0; i < sode; i++) {
     var data1={}
-    var arr = shuffle(exam["rawquestion"]);
-    data1["idexam"] = Math.floor((Math.random() * 100) + 1)
+    var arr = lodash.shuffle(exam["rawquestion"]);
+    data1["idexam"] = Math.floor((Math.random() * 100) + 1)+Math.floor((Math.random() * 100) + 1)+Math.floor((Math.random() * 100) + 1)
     data1["questions"] = arr;
     data[i]=data1
   }
 
   return data;
 }
-function shuffle(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-  return array;
-}
+// function shuffle(array) {
+//   var b=[]
+//   do{
+//     for (var i = array.length - 1; i > 0; i--) {
+//       var j = Math.floor(Math.random() * (i + 1));
+//       if(!b.includes(array[j])){
+//         b.push(array[j])
+//       }
+      
+//     }
+//   }
+//   while(b.length!=array.length)
+//   return b;
+
+// }
 module.exports = new Exam();

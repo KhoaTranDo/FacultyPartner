@@ -1,17 +1,73 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-let UserSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: true
+let ExamSchema = mongoose.Schema(
+  {
+    titles: {
+      type: String,
+      required: true,
     },
-    tenbaikiemtra: {
-        type: String,
-        required: true
+    password: {
+      type: String,
+      required: true,
     },
-},
-{
-    timestamps:true,
-});
+    timedoexam: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    rawquestions: {
+      type: Array,
+      items: {
+        type: Object,
+        required: [],
+        properties: {
+          question: {
+            type: String,
+          },
+          answer: {
+            type: Array,
+          },
+          trueanswer: {
+            type: Array,
+          },
+          image: {
+            type: Array,
+          },
+        },
+      },
+    },
+    optionmixed: {
+      type: Array,
+      items: {
+        type: String,
+      },
+    },
+    exammixed: {
+      type: Array,
+      items: {
+        type: Object,
+        required: [],
+        properties: {
+          question: {
+            type: String,
+          },
+          answer: {
+            type: Array,
+          },
+          trueanswer: {
+            type: Array,
+          },
+          image: {
+            type: Array,
+          },
+        },
+      },
+    },
+    slug: { type: String}
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = UserSchema = mongoose.model('UserProfile', UserSchema);
+module.exports = ExamSchema = mongoose.model("Exam", ExamSchema);

@@ -49,7 +49,7 @@
 #             if worda in cauhoi:
 #                 for run in a.runs:
 #                     if run.bold:
-#                         cauhoi = cauhoi.replace(worda, '***')
+#                         cauhoi = cauhoi.replace(worda, '$$')
 #                     else:
 #                         cauhoi = cauhoi.replace(worda, '**')
 #                 a.text = cauhoi
@@ -70,7 +70,7 @@
 
 #     if "**" in TimCauHoi(a):
 #         answerthamthoi.append(TimCauHoi(a))
-#     if "***" in TimCauHoi(a):
+#     if "$$" in TimCauHoi(a):
 #         trueanswer.append(TimCauHoi(a))
 #     if "#End" in TimCauHoi(a):
 #         luutamthoi["Answer"] = answerthamthoi
@@ -161,7 +161,7 @@ def TimCauHoi(a):
             if worda in cauhoi:
                 for run in a.runs:
                     if run.bold:
-                        cauhoi = cauhoi.replace(worda, '***')
+                        cauhoi = cauhoi.replace(worda, '$$')
                     else:
                         cauhoi = cauhoi.replace(worda, '**')
                 a.text = cauhoi
@@ -200,7 +200,7 @@ for a in all_text:
     if "###" in TimCauHoi(a):
         if answerthamthoi !=[]:
             luutamthoi["Answer"] = answerthamthoi
-            luutamthoi["Truenswer"] = trueanswer
+            luutamthoi["Trueanswer"] = trueanswer
             luutamthoi["image"] = luuanh
             exams.append(luutamthoi)
             luuanh=[]
@@ -211,11 +211,12 @@ for a in all_text:
         cauhoi = TimCauHoi(a).replace('###', '')
         luutamthoi['Question'] = cauhoi
 
-    if "**" in TimCauHoi(a):
+    if ("**"or"$$") in TimCauHoi(a):
         dapan=TimCauHoi(a).replace('**','')
         answerthamthoi.append(dapan)
-    if "***" in TimCauHoi(a):
-        dapandung = TimCauHoi(a).replace('***', '')
+    if "$$" in TimCauHoi(a):
+        dapandung = TimCauHoi(a).replace('$$', '')
+        answerthamthoi.append(dapandung)
         trueanswer.append(dapandung)
     if "#End" in TimCauHoi(a):
         luutamthoi["Answer"] = answerthamthoi

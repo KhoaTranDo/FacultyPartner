@@ -1,10 +1,20 @@
-import logo from './logo.svg';
+
 import './App.css';
 import Homepage from './components/homepage/homepage'
-function App() {
-  return (
-      <Homepage></Homepage>
-  );
+import { Component } from 'react';
+
+class App extends Component {
+  constructor(props){
+    super(props)
+
+  }
+  render(){
+    return (
+       <>
+       {this.props.children}
+       </>
+    )
+  }
 }
 
 export default App;
