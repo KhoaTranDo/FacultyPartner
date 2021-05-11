@@ -1,5 +1,5 @@
 import { Component } from "react";
-import Printare from "./ExamResult/printarea";
+import Printare from "../ExamResult/printarea";
 import { Link } from "react-router-dom";
 class Listexam extends Component {
   constructor(props) {

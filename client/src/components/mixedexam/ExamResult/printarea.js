@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { asBlob } from "html-docx-js-typescript";
 import { saveAs } from "file-saver";
+import Exportdocx from'../Printdocx/Exportdocx'
 class Areaprint extends Component {
   constructor(props) {
     super(props);
@@ -119,13 +120,14 @@ class Areaprint extends Component {
           <div id={this.state.element} style={{width:'816px',backgroundColor:'white',padding:' 20px 95px'}} className="m-auto">
             
             {this.Renderquestion()}
-
+          
             {/* <Prompt when={true}
                     message={(location)=>'Ban co chac khong'}>
                     </Prompt> */}
             {/* <Printare /> */}
           </div>
         </div>
+        <Exportdocx/>
       </div>
     );
   }

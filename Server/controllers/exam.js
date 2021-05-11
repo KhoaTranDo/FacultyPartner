@@ -7,6 +7,23 @@ const spawn = require("child_process").spawn;
 const qr = require("qrcode");
 const lodash =require('lodash')
 
+// Call model 
+// const Role = require('../models/Role')
+/**
+ * Role.findOne({ slug: req.params.slug })
+            .then(roles => res.render('lessor/show', { roles: mongooseToObject(roles) }))
+            .catch(next)
+ * Find
+ * Findone
+ * save
+ * findByid
+ * Put
+ * Updatemany
+ *  Role.updateMany({ _id: req.params.id }, req.body)
+            .then(() => res.redirect('/lessor/stores/post'))
+            .catch(next)
+  DeleteOne
+*/
 class Exam {
   index(req, res) {
     res.json({ ad: "ddd" });

@@ -1,7 +1,7 @@
 import { Component } from "react";
-import Rawquestion from "./rawquestion";
-import Listexam from "./listexammixed";
-import Infor from "./information";
+import Rawquestion from "./Rawquestion/rawquestion";
+import Listexam from "./Exammix/listexammixed";
+import Infor from "./Rawquestion/information";
 import { Link } from "react-router-dom";
 class Import extends Component {
   constructor(props) {

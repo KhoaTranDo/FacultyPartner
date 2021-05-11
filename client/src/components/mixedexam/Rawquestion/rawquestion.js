@@ -8,7 +8,7 @@ class Rawquestion extends Component {
     let data = this.props.rawquestion["rawquestion"];
     if (data)
       return data.map((value, index) => {
-        // console.log(value['Question'])
+     
         return (
           <div key={index} className="col-sm-12 pt-3">
             <div className="card">
@@ -51,14 +51,14 @@ class Rawquestion extends Component {
                 <button
                   type="button"
                   style={{ width: "45%" }}
-                  className="btn btn-outline-warning d-inline  ml-1 float-xl-left"
+                  className="btn btn-outline-warning d-inline  ml-1 float-left"
                 >
                   Sửa
                 </button>
                 <button
                   type="button"
                   style={{ width: "45%" }}
-                  className="btn btn-outline-danger  ml-1 float-xl-right "
+                  className="btn btn-outline-danger  ml-1 float-right "
                 >
                   Xóa
                 </button>
@@ -76,7 +76,7 @@ class Rawquestion extends Component {
           <div className="card-header" id="headingOne">
             <h2 className="mb-0">
               <div
-                className="btn btn-link collapsed"
+                className="btn btn-link collapsed p-0"
                 style={{ textDecoration: "none" }}
                 type="button"
                 data-toggle="collapse"
