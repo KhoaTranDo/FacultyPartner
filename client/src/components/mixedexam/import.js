@@ -10,11 +10,15 @@ class Import extends Component {
       rawdata: {},
     };
   }
+  Changerawdata=(data)=>{
+    let raw=this.state.rawdata
+    raw['rawquestion']=data
+    this.setState({rawdata:raw})
+  }
   setData = async (datafile) => {
     await this.setState({
       rawdata: datafile,
     });
-    console.log(this.state.rawdata);
   };
   render() {
     return (
@@ -34,14 +38,14 @@ class Import extends Component {
           <b>TẠO ĐỀ</b>
         </h3>
         {/* input information  */}
-        <Infor dataexam={this.setData} />
+        <Infor dataexam={this.setData} rawquestion={this.state.rawdata}  />
         {/* end ìnormation */}
         {/* view */}
         <div className="container">
           <div className="row mt-5">
             {/* Raw question */}
             <div className="accordion col-12" id="accordionExample">
-              <Rawquestion rawquestion={this.state.rawdata} />
+              <Rawquestion rawquestion={this.state.rawdata} chagedata={this.Changerawdata}/>
             </div>
           </div>
           <div className="row mt-5">

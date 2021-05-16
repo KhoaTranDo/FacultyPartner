@@ -12,28 +12,27 @@ let ExamSchema = mongoose.Schema(
     },
     timedoexam: {
       type: String,
-      required: true,
-      unique: true,
+     required: true,
     },
     rawquestions: {
       type: Array,
       items: {
         type: Object,
         required: [],
-        properties: {
-          question: {
+      
+          Question: {
             type: String,
           },
-          answer: {
+          Answer: {
             type: Array,
           },
-          trueanswer: {
+          Trueanswer: {
             type: Array,
           },
           image: {
             type: Array,
           },
-        },
+        
       },
     },
     optionmixed: {
@@ -63,7 +62,8 @@ let ExamSchema = mongoose.Schema(
         },
       },
     },
-    slug: { type: String}
+    slug: { type: String},
+    qrimage:{type:String}
   },
   {
     timestamps: true,

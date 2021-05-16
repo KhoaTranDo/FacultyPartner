@@ -1,14 +1,24 @@
 import { Component } from "react";
 import Printare from "../ExamResult/printarea";
 import { Link } from "react-router-dom";
+import axios from "axios";
 class Listexam extends Component {
   constructor(props) {
     super(props);
   }
 
+  componentDidMount(){
+    axios
+    .get(`http://localhost:${process.env.REACT_APP_PORT}/exam/${this.props.rawquestion["slug"]}`)
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => console.log(err));
+  }
+
   Rendermixexam = () => {
+    console.log(this.props.rawquestion["slug"])
     let data = this.props.rawquestion["exammixed"];
-    console.log(data);
     if (this.props.rawquestion["exammixed"])
       return Object.keys(data).map((value, index) => {
         return (
@@ -38,7 +48,7 @@ class Listexam extends Component {
                     pathname: "/areaexam",
                     state: {
                       dataquestion: data[value],
-                      dataraw:this.props.rawquestion
+                      dataraw:this.props.rawquestion,
                     },
                   }}
                 >
@@ -73,9 +83,10 @@ class Listexam extends Component {
       });
   };
   Renderquestion = (data, id) => {
+    let Answer = ["A", "B", "C", "D", "E", "F", "G"];
     if (data)
       return data.map((value, index) => {
-        // console.log(value['Question'])
+    
         return (
           <div key={index} className="col-sm-12 pt-3">
             <div className="card">
@@ -83,32 +94,34 @@ class Listexam extends Component {
                 Question {index + 1}:{value["Question"]}
               </h5>
               <div className="card-body">
-                {value["Answer"].map((index) => {
-                  if (value["Trueanswer"].includes(index)) {
+                {value["Answer"].map((value1,index) => {
+                  if (value["Trueanswer"].includes(value1)) {
                     return (
-                      <div className="form-check">
-                        <input
+                      <div key={value1} className="form-check">
+                        {/* <input
                           className="form-check-input"
                           type="radio"
                           name={id + value["Question"]}
                           id="exampleRadios1"
                           defaultChecked
                           value={value["Question"]}
-                        />
-                        <label className="form-check-label"> {index}</label>
+                        /> */}
+                        <label><b>{Answer[index]}:</b></label>
+                        <label className="form-check-label"> {value1}</label>
                       </div>
                     );
                   } else {
                     return (
                       <div className="form-check">
-                        <input
+                        {/* <input
                           className="form-check-input"
                           type="radio"
                           name={id + value["Question"]}
                           id="exampleRadios1"
                           value={value["Question"]}
-                        />
-                        <label className="form-check-label"> {index}</label>
+                        /> */}
+                        <label><b>{Answer[index]}:</b> </label>
+                        <label className="form-check-label"> {value1}</label>
                       </div>
                     );
                   }

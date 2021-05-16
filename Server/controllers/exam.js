@@ -1,13 +1,15 @@
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
-const { validationResult } = require("express-validator");
-const UserSchema = require("../models/account");
+const { validationResult, check } = require("express-validator");
+const Examschema = require("../models/ExamModel");
 const config = require("config");
 const spawn = require("child_process").spawn;
 const qr = require("qrcode");
-const lodash =require('lodash')
+const lodash = require("lodash");
+const fs = require("fs");
+const { parseInt } = require("lodash");
 
-// Call model 
+// Call model
 // const Role = require('../models/Role')
 /**
  * Role.findOne({ slug: req.params.slug })
@@ -25,16 +27,31 @@ const lodash =require('lodash')
   DeleteOne
 */
 class Exam {
+  async addExam(req, res) {
+    console.log("aaaaa");
+    let id = req.params.id;
+    // res.json({ id: req.params.id });
+    // let a =  Examschema.findOne({ slug: req.params.id });
+    // console.log(a.data);
+    try {
+       await Examschema.findOne({ slug: id }, (err, result) => {
+        if (err) console.log(err);
+        res.json(result);
+      }).select("-password"); //khong hien thi password
+    } catch (err) {
+      res.json({
+        result: false,
+        message: err,
+      });
+    }
+  }
   index(req, res) {
     res.json({ ad: "ddd" });
-  }
-  addExam(req, res) {
-    res.json({ id: req.params.id });
   }
   importExam(req, res) {
     res.json({ ad: "import" });
   }
-  readExam(req, res) {
+  readExam = (req, res) => {
     // Thư viện spawn để chạy python
     var spawn = require("child_process").spawn;
     // Get questions data from python
@@ -42,46 +59,153 @@ class Exam {
     // Exam object
     var exam = {};
     // Lấy ảnh đã mã hoá
-    const url = 'req.file.filename';
+    const url = req.file.filename;
     // Kiểm tra qr rỗng không
     if (url.length === 0) res.send("Empty Data!");
     // Xuất qr code
-   qr.toDataURL(url, (err, src) => {
-     if (err) res.send("Error occured");
-     exam["image"] = src;
+    qr.toDataURL(url, (err, src) => {
+      if (err) res.send("Error occured");
+      exam["qrimage"] = src;
     });
     // Lấy file name
-    var tenfile = "de3.docx"; //vd de3.docx
+    //var tenfile = "de3.docx"; //vd de3.docx
+    var tenfile = req.file.filename;
+    //Truyen file vao python để dọc
     var process = spawn("python", ["Readword.py", tenfile]);
 
     //Tạo slug phần biệt
-     exam["slug"] = 'req.file.filename';
-
+    exam["slug"] = req.file.filename;
+    console.log(exam['slug'])
     // Chạy python
     process.stdout
       .on("data", function (data) {
-        // console.log(data.toString());
         getRawanswer += data.toString();
       })
       .on("end", () => {
         exam["rawquestion"] = JSON.parse(getRawanswer);
-        var arrmixexam=[]
-        arrmixexam=mixquestion(exam, 3)
-        // In ra ket qua
-        exam["exammixed"] = arrmixexam;
+
         res.send(exam);
       });
     process.stderr.on("data", function (data) {
       console.log("err data: " + data);
     });
-  }
+    setTimeout(function () {
+       // Xoa file docx da up len
+    const path = `./public/${req.file.filename}`;
 
+    fs.unlink(path, (err) => {
+      if (err) {
+        console.log("khong co file");
+        //console.error(err);
+        return;
+      }
+      //file removed
+    });
+    }, 10000);
+  };
+  async readmixExam(req, res) {
+    let {
+      data,
+      quanlityExam,
+      title,
+      timedoexam,
+      mixanswer,
+      mixquestion,
+      quanlityQs,
+      password,
+      
+    } = req.body;
+    var arrmixexam = [];
+
+    // // Xoa file docx da up len
+    // const path = `./public/${data["slug"]}`;
+
+    // fs.unlink(path, (err) => {
+    //   if (err) {
+    //     console.log("khong co file");
+    //     //console.error(err);
+    //     return;
+    //   }
+    //   //file removed
+    // });
+    let data1 = data;
+    let data2 = data;
+    data1["rawquestion"] = data["rawquestion"];
+
+    arrmixexam = Letmixquestion(
+      data2,
+      quanlityExam,
+      mixquestion,
+      mixanswer,
+      quanlityQs
+    );
+    // Ma hoa password
+    const salt = await bcryptjs.genSalt(10);
+    password = await bcryptjs.hash(password, salt);
+    // so sanh pass word
+    // let isPasswordMatch = await bcryptjs.compare(password, user.password);
+    data1["exammixed"] = arrmixexam;
+    //console.log(data1['exammixed'])
+    // console.log(arrmixexam)
+    data1["qrimage"]=data["qrimage"]
+    data1["title"] = title;
+    data1["time"] = timedoexam;
+    try {
+      let titles = title;
+      let rawquestions = data1["rawquestion"];
+      let optionmixed = [mixanswer.toString(), mixquestion.toString()];
+      let exammixed = lodash.values(data1["exammixed"]);
+      let slug = data1["slug"];
+      let qrimage=data1['qrimage']
+      let dataexam = new Examschema({
+        titles,
+        password,
+        timedoexam,
+        rawquestions,
+        optionmixed,
+        exammixed,
+        slug,
+        qrimage
+      });
+      let examcheck = await Examschema.findOne({ slug: slug });
+      if (examcheck) {
+        Examschema.updateOne(
+          { slug: slug },
+          {
+            slug: slug,
+            titles: titles,
+            password: password,
+            rawquestions: rawquestions,
+            timedoexam: timedoexam,
+            optionmixed: optionmixed,
+            exammixed: exammixed,
+            qrimage:qrimage
+          },
+          function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(result);
+            }
+          }
+        );
+      } else {
+        dataexam.save().then(() => {
+          console.log("sucess");
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+      return res.status(500).json({ msg: "Server Error..." });
+    }
+    res.send(data1);
+  }
+  // Get base64 image code
   getqr(req, res) {
     const url = req.body.url;
     if (url.length === 0) res.send("Empty Data!");
     qr.toDataURL(url, (err, src) => {
       if (err) res.send("Error occured");
-      console.log(src);
       res.send(JSON.stringify(src));
     });
   }
@@ -95,33 +219,87 @@ class Exam {
     res.json({ addd: "infor" });
   }
 }
-function mixquestion(exam, sode) {
-  // console.log(exam["rawquestion"]);
+function Letmixquestion(datasourse, sode, checkQs, checkAs, quanlityQs) {
+  let exam = lodash.cloneDeep(datasourse);
   var data = {};
   data[sode];
-  for (var i = 0; i < sode; i++) {
-    var data1={}
-    var arr = lodash.shuffle(exam["rawquestion"]);
-    data1["idexam"] = Math.floor((Math.random() * 100) + 1)+Math.floor((Math.random() * 100) + 1)+Math.floor((Math.random() * 100) + 1)
-    data1["questions"] = arr;
-    data[i]=data1
+  if (checkQs === true) {
+    if (checkAs) {
+      for (var i = 0; i < sode; i++) {
+        var data1 = {};
+        var arr = lodash.shuffle(exam["rawquestion"]);
+        arr.map((value) => {
+          let Answerch = lodash.shuffle(value["Answer"]);
+          value["Answer"] = Answerch;
+        });
+
+        data1["idexam"] =
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1);
+        data1["questions"] = arr.slice(0, parseInt(quanlityQs)); //lodash.sampleSize(arr, parseInt(quanlityQs));
+        data[i] = data1;
+      }
+    } else {
+      for (var i = 0; i < sode; i++) {
+        var data1 = {};
+        var arr = lodash.shuffle(exam["rawquestion"]);
+        data1["idexam"] =
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1);
+        data1["questions"] = arr.slice(0, parseInt(quanlityQs)); //lodash.sampleSize(arr, parseInt(quanlityQs));
+        data[i] = data1;
+      }
+    }
+  } else {
+    if (checkAs) {
+      let arr = exam["rawquestion"];
+      for (var i = 0; i < sode; i++) {
+        var data1 = {};
+        arr.map((value) => {
+          let Answerch = lodash.shuffle(value["Answer"]);
+          value["Answer"] = Answerch;
+        });
+        data1["idexam"] =
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1);
+        data1["questions"] = arr.slice(0, parseInt(quanlityQs));
+        data[i] = data1;
+      }
+    } else {
+      for (var i = 0; i < sode; i++) {
+        var data1 = {};
+        var arr = exam["rawquestion"];
+        data1["idexam"] =
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1) +
+          Math.floor(Math.random() * 100 + 1);
+        data1["questions"] = arr.slice(0, parseInt(quanlityQs));
+        data[i] = data1;
+      }
+    }
   }
 
   return data;
 }
-// function shuffle(array) {
-//   var b=[]
-//   do{
-//     for (var i = array.length - 1; i > 0; i--) {
-//       var j = Math.floor(Math.random() * (i + 1));
-//       if(!b.includes(array[j])){
-//         b.push(array[j])
-//       }
-      
-//     }
-//   }
-//   while(b.length!=array.length)
-//   return b;
-
 // }
 module.exports = new Exam();
+/**
+ * 
+mangnhan=_.shuffle(datashow['rawquestion'])
+console.log(mangnhan)
+
+mangnhan.map((value)=>{
+  let Answerch=_.shuffle(value['Answer'])
+//  console.log(Answerch)
+  value['Answer']=Answerch
+})
+
+//console.log(mangnhan)
+
+let a=[1,2,3,4,5]
+
+console.log(_.sampleSize(a, 4))
+ */

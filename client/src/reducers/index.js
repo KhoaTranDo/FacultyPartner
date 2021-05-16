@@ -1,10 +1,10 @@
-import couterReducer from './counter';
+import rawdata from './rawdata';
 import loggedReducer from './isLogged';
 
 import{combineReducers} from 'redux';
 
 const allReducers =combineReducers({
-    myCouter: couterReducer,
+    rawdata: rawdata,
     isLogged:loggedReducer
 })
 

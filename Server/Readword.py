@@ -134,7 +134,7 @@ def TimCauHoi(a):
     cauhoi = a.text
     # Nhận câu hỏi và đáp án theo ký tự
     words=['PART 1','Câu3','1)','2)','3)','###']
-    words1 = ['A', 'B', 'C', 'D', 'E', 'F']
+    words1 = ['A', 'B', 'C', 'D', 'E', 'F','a','b','c','d','e','f']
     words11 = []
     # Xử lý ký tự đầu đáp án
     for i in words1:
@@ -208,14 +208,14 @@ for a in all_text:
             answerthamthoi=[]
             trueanswer=[]
             index = index + 1
-        cauhoi = TimCauHoi(a).replace('###', '')
+        cauhoi = TimCauHoi(a).replace('###', '').strip()
         luutamthoi['Question'] = cauhoi
 
     if ("**"or"$$") in TimCauHoi(a):
-        dapan=TimCauHoi(a).replace('**','')
+        dapan=TimCauHoi(a).replace('**','').strip()
         answerthamthoi.append(dapan)
     if "$$" in TimCauHoi(a):
-        dapandung = TimCauHoi(a).replace('$$', '')
+        dapandung = TimCauHoi(a).replace('$$', '').strip()
         answerthamthoi.append(dapandung)
         trueanswer.append(dapandung)
     if "#End" in TimCauHoi(a):

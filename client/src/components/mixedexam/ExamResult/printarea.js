@@ -1,7 +1,8 @@
 import { Component } from "react";
 import { asBlob } from "html-docx-js-typescript";
 import { saveAs } from "file-saver";
-import Exportdocx from'../Printdocx/Exportdocx'
+import Exportdocx from "../Printdocx/Exportdocx";
+import axios from "axios";
 class Areaprint extends Component {
   constructor(props) {
     super(props);
@@ -11,36 +12,109 @@ class Areaprint extends Component {
     };
   }
 
-  componentDidMount() {
-    let { dataquestion, dataraw } = this.props.location.state;
-    this.setState({
-      data: dataquestion,
-      qrcoded: dataraw["image"],
-    });
-  }
-
-  Renderquestion = () => {
-    console.log(this.state.data);
-    let rawdata = this.state.data;
-    console.log(this.state.image);
-    return (
-      <>
-        {console.log(this.state.qrcoded)}
-        <div className='row'>
-        <img id='qrcode' src={this.state.qrcoded} alt="" width="50" height="50" />
-        </div>
-        <div className='row'>
-        <h1 id='idex' style={{ margin: "auto"}} className='text-center'>
-          <b>Đề {rawdata.idexam}</b>
-        </h1>
-        </div>
-        {this.Renderanswer()}
-      </>
-    );
+  componentDidMount = async () => {
+    let { dataraw } = await this.props.location.state;
+    axios
+      .get(
+        `http://localhost:${process.env.REACT_APP_PORT}/exam/${dataraw["slug"]}`
+      )
+      .then((res) => {
+        this.setState({
+          data: res.data["exammixed"],
+          qrcoded: res.data["qrimage"],
+          title: res.data["titles"],
+          time: res.data['timedoexam'],
+          dataraw: res.data,
+        });
+      })
+      .catch((err) => console.log(err));
   };
-  Renderanswer = () => {
+  Headerrender = () => {
+    let exampage = {};
+    exampage = this.state.data;
+    if (Object.keys(exampage).length > 0) {
+      return exampage.map((value, index) => {
+        let active = index === 0 ? "nav-link active" : "nav-link";
+        return (
+          <li className="nav-item">
+            <a
+              className={active}
+              data-toggle="tab"
+              href={`#question` + value["idexam"]}
+            >
+              Exam {value["idexam"]}
+            </a>
+          </li>
+        );
+      });
+    }
+  };
+  Renderquestion = () => {
+    let rawdata = this.state.data;
+    let title = this.state.title;
+    let time = this.state.time;
+    console.log(this.state.dataraw);
+    console.log(this.props.location.state.dataraw);
+    if (rawdata.length > 0) {
+      return rawdata.map((value, index) => {
+        let active =
+          index === 0 ? "container tab-pane active" : "container tab-pane fade";
+        return (
+          <>
+            <div id={`question${value["idexam"]}`} className={active}>
+              <br />
+              <Exportdocx data={this.state.dataraw} index={index} />
+            
+              <div
+                id={this.state.element}
+                style={{
+                  backgroundColor: "white",
+                  padding: "20px 95px",
+                }}
+                className="m-auto border"
+              >
+                <div className="row">
+                  <img
+                    id="qrcode"
+                    src={this.state.qrcoded}
+                    alt=""
+                    width="70"
+                    height="70"
+                  />
+                  <div className="col-9 float-right"></div>
+                  <p id="index" className="m-auto" style={{ fontSize: "14pt" }}>
+                    <b>Đề {value.idexam}</b>
+                  </p>
+                </div>
+                <div className="row">
+                  <h1
+                    id="idex"
+                    style={{ margin: "auto" }}
+                    className="text-center"
+                  >
+                    <b>{title} </b>
+                  </h1>
+                </div>
+                <div className="row">
+                  <h4
+                    id="idex"
+                    style={{ margin: "auto" }}
+                    className="text-center"
+                  >
+                    <b>{time} </b>
+                  </h4>
+                </div>
+                {this.Renderanswer(value.questions)}
+              </div>
+            </div>
+          </>
+        );
+      });
+    }
+  };
+  Renderanswer = (rawdata) => {
     let answer = ["A", "B", "C", "D", "E", "F"];
-    let rawdata = this.state.data.questions;
+    // let rawdata = this.state.data[0].questions;
     if (rawdata) {
       return rawdata.map((value, index) => {
         return (
@@ -50,7 +124,7 @@ class Areaprint extends Component {
             </p>
             {value["Answer"].map((value, index) => {
               return (
-                <p style={{ fontSize: "14pt"}}>
+                <p style={{ fontSize: "14pt" }}>
                   {answer[index]}. {value}
                 </p>
               );
@@ -60,74 +134,16 @@ class Areaprint extends Component {
       });
     }
   };
-  exportdocx = (filename = "") => {
-  
-    console.log(this.state.element);
-    var preHtml =
-      "<html xmlns:o='urn:schemas-microsoft-com:office:office \
-      'xmlns:w='urn:schemas-microsoft-com:office:word' \
-      xmlns='http://www.w3.org/TR/REC-html40'> \
-      <head><meta charset='utf-8'> \
-      <title>Export HTML To Doc</title>\
-      <style>*{ padding:0; margin:0; } img#qrcode{ width: 50px; } #idex{ text-align:center; } p{ font-size:14pt; font-family: 'Times New Roman', Times, serif; }</style>\
-      </head>\
-      <body>";
-    var postHtml = "</body></html>";
-    var html =
-      preHtml +
-      document.getElementById(this.state.element).innerHTML +
-      postHtml;
-
-    var blob = new Blob(["\ufeff", html], {
-      type: "application/msword",
-    });
-    asBlob(html).then((data) => {
-      saveAs(data, "file.docx"); // save as docx file
-    });
-    // // Specify link url
-    // var url =
-    //   "data:application/vnd.ms-word;charset=utf-8," + encodeURIComponent(html);
-
-    // // Specify file name
-    // filename = filename ? filename + ".doc" : "document.doc";
-
-    // // Create download link element
-    // var downloadLink = document.createElement("a");
-
-    // document.body.appendChild(downloadLink);
-
-    // if (navigator.msSaveOrOpenBlob) {
-    //   navigator.msSaveOrOpenBlob(blob, filename);
-    // } else {
-    //   // Create a link to the file
-    //   downloadLink.href = url;
-
-    //   // Setting the file name
-    //   downloadLink.download = filename;
-
-    //   //triggering the function
-    //   downloadLink.click();
-    // }
-
-    // document.body.removeChild(downloadLink);
-  };
 
   render() {
     return (
-      <div className='container' style={{backgroundColor:'#99FCEA'}}> 
-            <button onClick={this.exportdocx}>Xuat docx</button>
-        <div class="m-auto, d-block" >
-          <div id={this.state.element} style={{width:'816px',backgroundColor:'white',padding:' 20px 95px'}} className="m-auto">
-            
-            {this.Renderquestion()}
-          
-            {/* <Prompt when={true}
-                    message={(location)=>'Ban co chac khong'}>
-                    </Prompt> */}
-            {/* <Printare /> */}
-          </div>
-        </div>
-        <Exportdocx/>
+      <div className="container">
+        <div className="m-auto, d-block"></div>
+
+        <ul className="nav nav-tabs" role="tablist">
+          {this.Headerrender()}
+        </ul>
+        <div className="tab-content">{this.Renderquestion()}</div>
       </div>
     );
   }

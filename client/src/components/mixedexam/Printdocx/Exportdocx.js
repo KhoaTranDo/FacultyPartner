@@ -1,5 +1,4 @@
 import { Component } from "react";
-import data from "./data.json";
 import { saveAs } from "file-saver";
 import {
   Document,
@@ -14,7 +13,7 @@ import {
   PageNumber,
 } from "docx";
 // Tran Do Anh Khoa 5/11/2021
-const imageBase64Data = `iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAANqSURBVO3BMW7sWBAEwawG73/lXBlrtPUAghxJX6iI+IWq/w1Vy1C1DFXLULUMVctQtQxVy1C1DFXLULUMVctQtQxVy1C1DFXLxUNJ+E4qJ0nYVO5IwqayJWFTOUnCd1J5YqhahqplqFouXqbypiTcoXJHEk6ScJKETeVE5U1JeNNQtQxVy1C1XHxYEu5QuSMJn6SyJeFNSbhD5ZOGqmWoWoaq5eKPUTlJwonKloQTlb9kqFqGqmWoWi7+mCTcoXKicpKETeVfNlQtQ9UyVC0XH6byk1S2JGxJ2FROkvAmld9kqFqGqmWoWi5eloSfpLIlYVPZknCShE1lS8IdSfjNhqplqFqGquXiIZXfTGVLwhNJuEPlXzJULUPVMlQt8QsPJGFT2ZLwJpWTJNyh8klJeJPKJw1Vy1C1DFXLxcuScIfKHUnYVE5UtiScJOFEZUvCprKpbEnYVLYkbCpbEjaVNw1Vy1C1DFXLxTdTOUnCicpPSsJJEk5UtiRsKnckYVN5YqhahqplqFoufhmVO5Jwh8odKlsSNpU7knCShE3lOw1Vy1C1DFXLxUMqWxKeSMKJyonKHUnYVLYk3JGEE5UtCSdJ+E5D1TJULUPVEr/wQBI+SeWOJGwqn5SETeVNSdhUPmmoWoaqZaha4hceSMKm8kQS7lA5ScIdKidJ2FTuSMKmsiXhCZUnhqplqFqGquXil1E5ScIdKlsSNpWTJGwqWxLepPKThqplqFqGquXiw5KwqdyRhE1lS8Km8iaVT0rCHSpbEjaVJ4aqZahahqolfuEfloQ7VLYkvEnljiRsKidJ2FTeNFQtQ9UyVC0XDyXhO6lsKlsS7lDZknCisiXhJAmbykkS7kjCpvLEULUMVctQtVy8TOVNSThJwqayJeEkCScqT6jcoXKShE8aqpahahmqlosPS8IdKm9SuUNlS8IdSXgiCScqWxLeNFQtQ9UyVC0Xf0wSTlQ2lROVO5JworIl4Y4kfNJQtQxVy1C1XPwxKlsStiScqDyhcpKETeWJJLxpqFqGqmWoWi4+TOWTVLYkbCpbEjaVkyQ8obKp/GZD1TJULUPVcvGyJHynJGwqb1J5Ign/kqFqGaqWoWqJX6j631C1DFXLULUMVctQtQxVy1C1DFXLULUMVctQtQxVy1C1DFXLULX8B/lmaSGuDDKdAAAAAElFTkSuQmCC`;
+//const imageBase64Data = `iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAANqSURBVO3BMW7sWBAEwawG73/lXBlrtPUAghxJX6iI+IWq/w1Vy1C1DFXLULUMVctQtQxVy1C1DFXLULUMVctQtQxVy1C1DFXLxUNJ+E4qJ0nYVO5IwqayJWFTOUnCd1J5YqhahqplqFouXqbypiTcoXJHEk6ScJKETeVE5U1JeNNQtQxVy1C1XHxYEu5QuSMJn6SyJeFNSbhD5ZOGqmWoWoaq5eKPUTlJwonKloQTlb9kqFqGqmWoWi7+mCTcoXKicpKETeVfNlQtQ9UyVC0XH6byk1S2JGxJ2FROkvAmld9kqFqGqmWoWi5eloSfpLIlYVPZknCShE1lS8IdSfjNhqplqFqGquXiIZXfTGVLwhNJuEPlXzJULUPVMlQt8QsPJGFT2ZLwJpWTJNyh8klJeJPKJw1Vy1C1DFXLxcuScIfKHUnYVE5UtiScJOFEZUvCprKpbEnYVLYkbCpbEjaVNw1Vy1C1DFXLxTdTOUnCicpPSsJJEk5UtiRsKnckYVN5YqhahqplqFoufhmVO5Jwh8odKlsSNpU7knCShE3lOw1Vy1C1DFXLxUMqWxKeSMKJyonKHUnYVLYk3JGEE5UtCSdJ+E5D1TJULUPVEr/wQBI+SeWOJGwqn5SETeVNSdhUPmmoWoaqZaha4hceSMKm8kQS7lA5ScIdKidJ2FTuSMKmsiXhCZUnhqplqFqGquXil1E5ScIdKlsSNpWTJGwqWxLepPKThqplqFqGquXiw5KwqdyRhE1lS8Km8iaVT0rCHSpbEjaVJ4aqZahahqolfuEfloQ7VLYkvEnljiRsKidJ2FTeNFQtQ9UyVC0XDyXhO6lsKlsS7lDZknCisiXhJAmbykkS7kjCpvLEULUMVctQtVy8TOVNSThJwqayJeEkCScqT6jcoXKShE8aqpahahmqlosPS8IdKm9SuUNlS8IdSXgiCScqWxLeNFQtQ9UyVC0Xf0wSTlQ2lROVO5JworIl4Y4kfNJQtQxVy1C1XPwxKlsStiScqDyhcpKETeWJJLxpqFqGqmWoWi4+TOWTVLYkbCpbEjaVkyQ8obKp/GZD1TJULUPVcvGyJHynJGwqb1J5Ign/kqFqGaqWoWqJX6j631C1DFXLULUMVctQtQxVy1C1DFXLULUMVctQtQxVy1C1DFXLULX8B/lmaSGuDDKdAAAAAElFTkSuQmCC`;
 
 class Exportdocx extends Component {
   constructor(props) {
@@ -23,8 +22,21 @@ class Exportdocx extends Component {
       name: "React",
     };
   }
+  componentDidMount() {
+    console.log(this.props.data);
+    let data = this.props.data;
+
+    let getimage = data["qrimage"].split(";base64,").pop();
+
+    this.setState({
+      imageBase64Data: getimage,
+      data: data["exammixed"][this.props.index],
+      rawdata: this.props.data,
+    });
+  }
   //Xử lý dữ liệu in ra file docx
   generate = () => {
+    console.log(this.state.rawdata);
     const doc = new Document({
       // Nội dung file docx
       sections: [
@@ -64,7 +76,7 @@ class Exportdocx extends Component {
             new Paragraph({
               children: [
                 new ImageRun({
-                  data: Uint8Array.from(atob(imageBase64Data), (c) =>
+                  data: Uint8Array.from(atob(this.state.imageBase64Data), (c) =>
                     c.charCodeAt(0)
                   ),
                   transformation: {
@@ -81,7 +93,7 @@ class Exportdocx extends Component {
                   },
                 }),
                 new TextRun({
-                  text: `code`,
+                  text: `${this.state.data["idexam"]}`,
                   bold: true,
                   size: "18pt",
                   color: "000000",
@@ -94,7 +106,7 @@ class Exportdocx extends Component {
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `${data["title"]}`,
+                  text: `${this.state.rawdata["titles"]}`,
                   bold: true,
                   size: "18pt",
                   color: "000000",
@@ -109,7 +121,7 @@ class Exportdocx extends Component {
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `${data["time"]}`,
+                  text: `${this.state.rawdata["timedoexam"]}`,
                   bold: true,
                   size: "14pt",
                   color: "000000",
@@ -123,7 +135,7 @@ class Exportdocx extends Component {
             new Paragraph({}),
 
             // Render dữ liều câu hỏi và đáp án
-            ...this.CreateExam(data).map((index) => {
+            ...this.CreateExam(this.state.data).map((index) => {
               return index;
             }),
           ],
@@ -131,11 +143,17 @@ class Exportdocx extends Component {
       ],
     });
     //Xử lý xuất file word
+    this.DownloadFile(doc);
+  };
+
+  DownloadFile = (doc) => {
+    //Xử lý xuất file word
     Packer.toBlob(doc).then((blob) => {
       console.log(blob);
       saveAs(blob, "example.docx");
       console.log("Document created successfully");
     });
+    console.log(this.state.data);
   };
   //Kiểm tra tổng các ký từ đáp án của 1 câu hỏi
   //Phân chia hiển thị đáp án theo từng dòng hoặc 1 dòng
@@ -149,14 +167,14 @@ class Exportdocx extends Component {
 
   //Xuất câu hỏi và đáp án
   CreateExam(data) {
-    let question = data["rawquestion"];
+    let question = data["questions"];
     var arrData = [];
     Object.keys(question).map((value, index) => {
       //Nhận câu hỏi
       arrData.push(
         new Paragraph({
           children: [
-            new TextRun({ text: `${index + 1}.`, size: "14pt" }),
+            new TextRun({ text: `${index + 1}.`, size: "14pt", bold: true }),
             new TextRun({
               text: `${question[value].Question}`,
               size: "14pt",
@@ -175,7 +193,6 @@ class Exportdocx extends Component {
     });
     return arrData;
   }
-
   //   Xử lý hiển thị đáp án và chọn hình thức hiển thị
   CreateAnswer(arrAnswer) {
     // Mảng ký tự đáp án
@@ -241,8 +258,22 @@ class Exportdocx extends Component {
   render() {
     return (
       <>
-        <h1>adasdasd</h1>
-        <button onClick={this.generate}>Export to doc</button>
+      <div className='row pb-3'>
+        <div className='col-md-10 col-sm-7'>
+
+        </div>
+        <div className='col-md-2 col-sm-5'>
+          <button
+            type="button"
+            className="btn btn-success float-right"
+            onClick={this.generate}
+          >
+            Tải về
+          </button>
+
+        </div>
+  
+        </div>
       </>
     );
   }

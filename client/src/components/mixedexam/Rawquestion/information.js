@@ -18,14 +18,20 @@ class Informationexam extends Component {
       mixanswer: false,
       error: {},
       data: {},
+      Maxqslength:50
     };
+  }
+  changeDataprops=(data)=>{
+    this.setState({
+      data:data
+    })
   }
   //___________________________________________________
   //Import file docx function
   // On file select (from the pop up)
   onFileChange = async (event) => {
     // Update the state
-    console.log(event.target.files[0]);
+
     if (
       event.target.files[0].type ===
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -57,8 +63,7 @@ class Informationexam extends Component {
       this.state.selectedFile,
       this.state.selectedFile.name
     );
-    // Details of the uploaded file
-    console.log(this.state.selectedFile);
+    
 
     // Request made to the backend api
     // Send formData object
@@ -68,20 +73,56 @@ class Informationexam extends Component {
     event.preventDefault();
 
     if (this.state.selectedFile) {
+      let {selectedFile}=this.state
+
+    //Xoá thông báo lỗi
+    let subError = {};
+    subError["fomat"] = "";
+    this.setState({ error: subError });
+    //Tạo formdata truyền dữ liệu 
+    const formData = new FormData();
+    // Update the formData object
+    formData.append(
+      "avatar",
+      selectedFile
+    );
+      let datade={load:'load'}
+      this.props.dataexam(datade);
       const data = await axios.post(
-        `http://localhost:${process.env.REACT_APP_PORT}/exam/import`
+        `http://localhost:${process.env.REACT_APP_PORT}/exam/import`,formData
       );
       if (data) {
-        this.setState({ data: data.data });
-        this.props.dataexam(data.data);
+        if(this.state.quanlityQs>0  && this.state.quanlityQs> data.data['rawquestion'].length){
+          if(this.state.Maxqslength>data.data['rawquestion'].length){
+            this.setState({ data: data.data ,quanlityQs:0, quanlityExam: 0,Maxqslength:data.data['rawquestion'].length});
+            this.props.dataexam(data.data);
+          }
+          else{
+            this.setState({ data: data.data ,quanlityQs:0, quanlityExam: 0});
+            this.props.dataexam(data.data);
+          }
+        }
+        else{
+          if(this.state.Maxqslength>data.data['rawquestion'].length){
+            this.setState({ data: data.data ,Maxqslength:data.data['rawquestion'].length});
+            this.props.dataexam(data.data);
+          }else{
+            this.setState({ data: data.data});
+            this.props.dataexam(data.data);
+          }
+        }
       } else {
-        console.log(data.data);
-        this.props.dataexam("error");
+      this.props.dataexam("error");
       }
+    }
+    else{
+      let subError = {};
+      subError["fomat"] = "Please import file docx";
+      this.setState({ error: subError });
     }
   };
   // _____________________________________________
-  SubmitData = (e) => {
+  SubmitData = async (e) => {
     e.preventDefault();
     // Kiểm tra điều kiện
 
@@ -136,8 +177,43 @@ class Informationexam extends Component {
       } else {
       }
       if (validationSubmit) {
-        console.log(this.state);
-      }
+      
+        let subError = {};
+        subError["fomat"] = "";
+        this.setState({ error: subError });
+        let check =this.state.data
+        if(Object.keys(check).length>0){
+      
+          let data=this.state.data
+          let dataSend={
+            data:this.state.data,
+            quanlityExam: this.state.quanlityExam,
+            quanlityQs: this.state.quanlityQs,
+            title:this.state.title,
+            timedoexam:this.state.time,
+            mixquestion:this.state.mixquestion,
+            mixanswer:this.state.mixanswer,
+            password:this.state.password
+          }
+           let getdata= await axios.post(
+          `http://localhost:${process.env.REACT_APP_PORT}/exam/import/mixquestion`,dataSend );
+          if (getdata) {
+           this.setState({ data: getdata.data });
+           this.props.dataexam(getdata.data);
+          
+           
+          } else {
+          
+            this.props.dataexam("error");
+          }
+        }
+        else{
+          let subError = {};
+          subError["fomat"] = "please click upload file";
+          this.setState({ error: subError });
+        }
+        }
+      
     } else {
       validationSubmit = false;
       let subError={}
@@ -164,13 +240,14 @@ class Informationexam extends Component {
         });
       }
     }
-    console.log(a);
+  
   };
   HandleQuanlityQs = (e) => {
     e.preventDefault();
     let a = this.state.quanlityQs;
     if (e.target.name === "up") {
-      if (a < 50) {
+      console.log(this.state.Maxqslength)
+      if (a+5 <= this.state.Maxqslength) {
         this.setState({
           quanlityQs: a + 5,
         });
@@ -182,7 +259,7 @@ class Informationexam extends Component {
         });
       }
     }
-    console.log(a);
+   
   };
   HandleChange = (e) => {
     e.preventDefault();
@@ -192,6 +269,7 @@ class Informationexam extends Component {
   };
 
   HandleOption = (e) => {
+   
     this.setState({ [e.target.name]: !this.state[e.target.name] });
   };
   render() {
@@ -259,7 +337,7 @@ class Informationexam extends Component {
                             <input
                               type="text"
                               className="form-control"
-                              maxlength="10"
+                              maxlength="50"
                               name="time"
                               onChange={this.HandleChange}
                             />

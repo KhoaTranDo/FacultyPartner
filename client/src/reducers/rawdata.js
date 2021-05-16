@@ -1,11 +1,11 @@
-const CouterReducer=(state=0,action)=>{
+const rawdata=(state={},action)=>{
     switch (action.type) {
-        case 'INCREATED':
+        case 'NEW':
             return state+1;
-        case 'DECREATED':
+        case 'Updata':
             return state-1;
         default:
             return state;
     }
 }
-export default CouterReducer;
+export default rawdata;
